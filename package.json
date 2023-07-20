@@ -1,0 +1,15 @@
+{
+  "name": "fitnesscoachapp",
+  "version": "1.0.0",
+  "description": "Train your clients online",
+  "main": "script.js",
+  "scripts": {
+    "start": "parcel index.html",
+    "build": "parcel build index.html"
+  },
+  "author": "Amine Mhiri",
+  "license": "ISC",
+  "devDependencies": {
+    "parcel": "^2.9.3"
+  }
+}
