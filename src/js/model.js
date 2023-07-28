@@ -1,42 +1,22 @@
-// import {async} from 'regenerator-runtime';
+import { API_URL, API_OPTIONS, RES_PER_PAGE } from './config';
+
+import { getJSON } from './helpers';
+
 export const state = {
   workout: {},
+  search: {
+    query: '',
+    results: [],
+    page: 1,
+    resultsPerPage: RES_PER_PAGE,
+  },
 };
 
 export const loadWorkout = async function (id) {
   try {
-    const url = 'https://exercisedb.p.rapidapi.com/exercises';
-    const options = {
-      method: 'GET',
-      headers: {
-        'X-RapidAPI-Key': 'b18f7ecab4msh714e81df57af967p11bba7jsn1be18de8f791',
-        // 'X-RapidAPI-Key': process.env.APP_RAPID_API_KEY,
-        'X-RapidAPI-Host': 'exercisedb.p.rapidapi.com',
-      },
-    };
-    const res = await fetch(url, options);
-    const data = await res.json();
-    console.log(data);
-    if (!res.ok) throw new Error(`${data.message} (${res.status}) `);
+    const data = await getJSON(API_URL, API_OPTIONS);
+    const workout = data.filter(workout => workout.id === id)[0];
 
-    let workouts;
-
-    if (!id) {
-      // 3. Loading the exercises
-      workouts = data.filter(
-        exercice =>
-          exercice.name.includes(search) ||
-          exercice.target.includes(search) ||
-          exercice.equipment.includes(search) ||
-          exercice.bodyPart.includes(search)
-      );
-      console.log(workouts);
-    } else {
-      workouts = data.filter(workout => workout.id === id);
-      console.log(workouts);
-    }
-
-    const workout = workouts[0];
     state.workout = {
       id: workout.id,
       bodyPart: workout.bodyPart,
@@ -46,10 +26,58 @@ export const loadWorkout = async function (id) {
       target: workout.target,
       repetitions: 10,
       sets: 3,
+      publisher: 'FitnessCoachApp',
     };
-
+    window.location.hash = `#${workout.id}`;
     console.log(state.workout);
+    console.log(state.search.results);
   } catch (err) {
-    console.log(err);
+    console.log(`${err} 🧧`);
+    throw err;
   }
+};
+
+export const loadSearchResults = async function (query) {
+  try {
+    const data = await getJSON(API_URL, API_OPTIONS);
+    state.search.query = query;
+    // 3. Loading the exercises
+    state.search.results = data
+      .filter(
+        exercice =>
+          exercice.name.includes(query) ||
+          exercice.target.includes(query) ||
+          exercice.equipment.includes(query) ||
+          exercice.bodyPart.includes(query)
+      )
+      .map(workout => {
+        return {
+          id: workout.id,
+          bodyPart: workout.bodyPart,
+          equipment: workout.equipment,
+          gif: workout.gifUrl,
+          name: workout.name,
+          target: workout.target,
+          repetitions: 10,
+          sets: 3,
+          publisher: 'FitnessCoachApp',
+        };
+      });
+  } catch (err) {
+    console.log(`${err} 🧧`);
+    throw err;
+  }
+};
+
+export const getSearchResultsPage = function (page = state.search.page) {
+  state.search.page = page;
+  const start = (page - 1) * state.search.resultsPerPage; //0;
+  const end = page * state.search.resultsPerPage; //6;
+  return state.search.results.slice(start, end);
+};
+
+export const updateWorkoutOptions = function (option, newValue) {
+  option === 'sets'
+    ? (state.workout.sets = newValue)
+    : (state.workout.repetitions = newValue);
 };

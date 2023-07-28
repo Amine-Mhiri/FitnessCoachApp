@@ -579,38 +579,69 @@ var _webImmediateJs = require("core-js/modules/web.immediate.js");
 var _modelJs = require("./model.js");
 var _workoutViewJs = require("./views/workoutView.js");
 var _workoutViewJsDefault = parcelHelpers.interopDefault(_workoutViewJs);
+var _searchViewJs = require("./views/searchView.js");
+var _searchViewJsDefault = parcelHelpers.interopDefault(_searchViewJs);
+var _resultsViewJs = require("./views/resultsView.js");
+var _resultsViewJsDefault = parcelHelpers.interopDefault(_resultsViewJs);
+var _paginationViewJs = require("./views/paginationView.js");
+var _paginationViewJsDefault = parcelHelpers.interopDefault(_paginationViewJs);
 //  regenerator is for polyfilling async await for older browsers
 var _runtime = require("regenerator-runtime/runtime");
-const searchInput = document.querySelector(".search__field");
-const searchBtn = document.querySelector(".search__btn");
-let search;
-// 1. Adding event listener and extracting search
-searchBtn.addEventListener("click", function(e) {
-    e.preventDefault();
-    search = searchInput.value.toLowerCase();
-    controlWorkout();
-    searchInput.value = "";
-});
+var _regeneratorRuntime = require("regenerator-runtime");
+if (module.hot) module.hot.accept();
 const controlWorkout = async function() {
     try {
         const id = window.location.hash.slice(1);
-        if (!id && !searchInput.value) return;
+        if (!id) return;
         (0, _workoutViewJsDefault.default).renderSpinner();
+        // 1. Update results view to mark selected search result
+        // resultsView.render(model.getSearchResultsPage());
         // 2. loading workout :
         await _modelJs.loadWorkout(id);
         // 3. Rendering workout :
         (0, _workoutViewJsDefault.default).render(_modelJs.state.workout);
     } catch (err) {
-        console.log(`${err}🎃,${err.message}`);
+        (0, _workoutViewJsDefault.default).renderError();
     }
 };
-// Listening to hashchange :
-[
-    "hashchange",
-    "load"
-].forEach((ev)=>window.addEventListener(ev, controlWorkout));
+const controlSearchResults = async function() {
+    try {
+        (0, _resultsViewJsDefault.default).renderSpinner();
+        // 1) Get Search query :
+        const query = (0, _searchViewJsDefault.default).getQuery();
+        if (!query) return;
+        // 2) Load Search Results :
+        await _modelJs.loadSearchResults(query);
+        // 3) Render Results :
+        (0, _resultsViewJsDefault.default).render(_modelJs.getSearchResultsPage());
+        // 4) Render initial pagination Numbers
+        (0, _paginationViewJsDefault.default).render(_modelJs.state.search);
+    } catch (err) {
+        console.log(err);
+    }
+};
+const controlPagination = function(goToPage) {
+    // 1) Render NEW Results :
+    (0, _resultsViewJsDefault.default).render(_modelJs.getSearchResultsPage(goToPage));
+    // 4) Render NEW pagination Numbers
+    (0, _paginationViewJsDefault.default).render(_modelJs.state.search);
+};
+const controlWorkoutOptions = function(option, newValue) {
+    // Update the Repetitions and sets (in state) :
+    _modelJs.updateWorkoutOptions(option, newValue);
+    // Update the workout view :
+    // workoutView.render(model.state.workout);
+    (0, _workoutViewJsDefault.default).update(_modelJs.state.workout);
+};
+const init = function() {
+    (0, _workoutViewJsDefault.default).addHandlerRender(controlWorkout);
+    (0, _workoutViewJsDefault.default).addHandlerUpdateOptions(controlWorkoutOptions);
+    (0, _searchViewJsDefault.default).addHandlerSearch(controlSearchResults);
+    (0, _paginationViewJsDefault.default).addHandlerClick(controlPagination);
+};
+init();
 
-},{"core-js/modules/web.immediate.js":"49tUX","regenerator-runtime/runtime":"dXNgZ","./model.js":"Y4A21","./views/workoutView.js":"6ADSb","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"49tUX":[function(require,module,exports) {
+},{"core-js/modules/web.immediate.js":"49tUX","regenerator-runtime/runtime":"dXNgZ","./model.js":"Y4A21","./views/workoutView.js":"6ADSb","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./views/searchView.js":"9OQAM","./views/resultsView.js":"cSbZE","regenerator-runtime":"dXNgZ","./views/paginationView.js":"6z7bi"}],"49tUX":[function(require,module,exports) {
 // TODO: Remove this module from `core-js@4` since it's split to modules listed below
 require("52e9b3eefbbce1ed");
 require("292fa64716f5b39e");
@@ -2510,39 +2541,28 @@ try {
 }
 
 },{}],"Y4A21":[function(require,module,exports) {
-// import {async} from 'regenerator-runtime';
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "state", ()=>state);
 parcelHelpers.export(exports, "loadWorkout", ()=>loadWorkout);
+parcelHelpers.export(exports, "loadSearchResults", ()=>loadSearchResults);
+parcelHelpers.export(exports, "getSearchResultsPage", ()=>getSearchResultsPage);
+parcelHelpers.export(exports, "updateWorkoutOptions", ()=>updateWorkoutOptions);
+var _config = require("./config");
+var _helpers = require("./helpers");
 const state = {
-    workout: {}
+    workout: {},
+    search: {
+        query: "",
+        results: [],
+        page: 1,
+        resultsPerPage: (0, _config.RES_PER_PAGE)
+    }
 };
 const loadWorkout = async function(id) {
     try {
-        const url = "https://exercisedb.p.rapidapi.com/exercises";
-        const options = {
-            method: "GET",
-            headers: {
-                "X-RapidAPI-Key": "b18f7ecab4msh714e81df57af967p11bba7jsn1be18de8f791",
-                // 'X-RapidAPI-Key': process.env.APP_RAPID_API_KEY,
-                "X-RapidAPI-Host": "exercisedb.p.rapidapi.com"
-            }
-        };
-        const res = await fetch(url, options);
-        const data = await res.json();
-        console.log(data);
-        if (!res.ok) throw new Error(`${data.message} (${res.status}) `);
-        let workouts;
-        if (!id) {
-            // 3. Loading the exercises
-            workouts = data.filter((exercice)=>exercice.name.includes(search) || exercice.target.includes(search) || exercice.equipment.includes(search) || exercice.bodyPart.includes(search));
-            console.log(workouts);
-        } else {
-            workouts = data.filter((workout)=>workout.id === id);
-            console.log(workouts);
-        }
-        const workout = workouts[0];
+        const data = await (0, _helpers.getJSON)((0, _config.API_URL), (0, _config.API_OPTIONS));
+        const workout = data.filter((workout)=>workout.id === id)[0];
         state.workout = {
             id: workout.id,
             bodyPart: workout.bodyPart,
@@ -2551,13 +2571,68 @@ const loadWorkout = async function(id) {
             name: workout.name,
             target: workout.target,
             repetitions: 10,
-            sets: 3
+            sets: 3,
+            publisher: "FitnessCoachApp"
         };
+        window.location.hash = `#${workout.id}`;
         console.log(state.workout);
+        console.log(state.search.results);
     } catch (err) {
-        console.log(err);
+        console.log(`${err} 🧧`);
+        throw err;
     }
 };
+const loadSearchResults = async function(query) {
+    try {
+        const data = await (0, _helpers.getJSON)((0, _config.API_URL), (0, _config.API_OPTIONS));
+        state.search.query = query;
+        // 3. Loading the exercises
+        state.search.results = data.filter((exercice)=>exercice.name.includes(query) || exercice.target.includes(query) || exercice.equipment.includes(query) || exercice.bodyPart.includes(query)).map((workout)=>{
+            return {
+                id: workout.id,
+                bodyPart: workout.bodyPart,
+                equipment: workout.equipment,
+                gif: workout.gifUrl,
+                name: workout.name,
+                target: workout.target,
+                repetitions: 10,
+                sets: 3,
+                publisher: "FitnessCoachApp"
+            };
+        });
+    } catch (err) {
+        console.log(`${err} 🧧`);
+        throw err;
+    }
+};
+const getSearchResultsPage = function(page = state.search.page) {
+    state.search.page = page;
+    const start = (page - 1) * state.search.resultsPerPage; //0;
+    const end = page * state.search.resultsPerPage; //6;
+    return state.search.results.slice(start, end);
+};
+const updateWorkoutOptions = function(option, newValue) {
+    option === "sets" ? state.workout.sets = newValue : state.workout.repetitions = newValue;
+};
+
+},{"./config":"k5Hzs","./helpers":"hGI1E","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"k5Hzs":[function(require,module,exports) {
+// Contains all the constant variables that we might change in the future for the app
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "API_URL", ()=>API_URL);
+parcelHelpers.export(exports, "API_OPTIONS", ()=>API_OPTIONS);
+parcelHelpers.export(exports, "TIMEOUT_SEC", ()=>TIMEOUT_SEC);
+parcelHelpers.export(exports, "RES_PER_PAGE", ()=>RES_PER_PAGE);
+const API_URL = "https://exercisedb.p.rapidapi.com/exercises";
+const API_OPTIONS = {
+    method: "GET",
+    headers: {
+        "X-RapidAPI-Key": "bb5361212fmsh0c0a687cfb61612p1ac232jsn114441e55a26",
+        "X-RapidAPI-Host": "exercisedb.p.rapidapi.com"
+    }
+};
+const TIMEOUT_SEC = 10;
+const RES_PER_PAGE = 7;
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gkKU3":[function(require,module,exports) {
 exports.interopDefault = function(a) {
@@ -2589,77 +2664,109 @@ exports.export = function(dest, destName, get) {
     });
 };
 
-},{}],"6ADSb":[function(require,module,exports) {
+},{}],"hGI1E":[function(require,module,exports) {
+// Functions that we're going to use over and over
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-class WorkoutView {
-    #parentElement = document.querySelector(".workout");
-    #data;
-    render(data) {
-        this.#data = data;
-        const markup = this.#generateMarkup();
-        this.#clear();
-        this.#parentElement.insertAdjacentHTML("afterbegin", markup);
+parcelHelpers.export(exports, "getJSON", ()=>getJSON);
+var _config = require("./config");
+const timeout = function(s) {
+    return new Promise(function(_, reject) {
+        setTimeout(function() {
+            reject(new Error(`Request took too long! Timeout after ${s} second`));
+        }, s * 1000);
+    });
+};
+const getJSON = async function(url, options) {
+    try {
+        const res = await Promise.race([
+            fetch(url, options),
+            timeout((0, _config.TIMEOUT_SEC))
+        ]);
+        const data = await res.json();
+        if (!res.ok) throw new Error(`${data.message} (${res.status}) `);
+        return data;
+    } catch (err) {
+        throw err;
     }
-    #clear() {
-        this.#parentElement.innerHTML = "";
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./config":"k5Hzs"}],"6ADSb":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _view = require("./View");
+var _viewDefault = parcelHelpers.interopDefault(_view);
+class WorkoutView extends (0, _viewDefault.default) {
+    _parentEl = document.querySelector(".workout");
+    _errorMessage = `Sorry we couldn't find this workout, please try another one`;
+    _message = ``;
+    addHandlerRender(handler) {
+        // Listening to hashchange :
+        [
+            "hashchange",
+            "load"
+        ].forEach((ev)=>window.addEventListener(ev, handler));
     }
-    renderSpinner = function() {
-        const markup = `
-    <div class ="spinner">
-    <i class="fa-solid fa-spinner"></i>
-    </div>
-    `;
-        this.#parentElement.innerHTML = "";
-        this.#parentElement.insertAdjacentHTML("afterbegin", markup);
-    };
-    #generateMarkup() {
+    addHandlerUpdateOptions(handler) {
+        this._parentEl.addEventListener("click", function(e) {
+            const btn = e.target.closest(".btn--tiny");
+            if (!btn) return;
+            console.log(btn);
+            const updateTo = +btn.dataset.updateTo;
+            // const workoutOption = 'sets';
+            const workoutOption = btn.classList.contains("btn--decrease-repetitions") || btn.classList.contains("btn--increase-repetitions") ? "repetitions" : "sets";
+            console.log(workoutOption);
+            console.log(updateTo);
+            if (updateTo > 0) handler(workoutOption, updateTo);
+        });
+    }
+    _generateMarkup() {
         return `
     <figure class="workout__fig">
-    <img src="${this.#data.gif}" alt="${this.#data.name}" class="workout__img" />
+    <img src="${this._data.gif}" alt="${this._data.name}" class="workout__img" />
     <h3 class="workout__title">
-      <span>${this.#data.name.toUpperCase()}</span>
+      <span>${this._data.name.toUpperCase()}</span>
     </h3>
     </figure>
 
     <div class="workout__details">
         <div class="workout__info">
         <span class="workout__info-text">Body Part : </span>
-          <span class="workout__info-data workout__info-data--bodyPart">${this.#data.bodyPart}</span>
+          <span class="workout__info-data workout__info-data--bodyPart">${this._data.bodyPart}</span>
         </div>
 
         <div class="workout__info">
         <span class="workout__info-text">Equipment : </span>
-        <span class="workout__info-data workout__info-data--equipment">${this.#data.equipment}</span>
+        <span class="workout__info-data workout__info-data--equipment">${this._data.equipment}</span>
        </div>
 
        <div class="workout__info">
        <span class="workout__info-text">Target : </span>
-       <span class="workout__info-data workout__info-data--target">${this.#data.target}</span>
+       <span class="workout__info-data workout__info-data--target">${this._data.target}</span>
       </div>
 
         <div class="workout__info">
         <span class="workout__info-text">Nbr of repetitions : </span>
-          <span class="workout__info-data workout__info-data--repetitions">x${this.#data.repetitions}</span>
+          <span class="workout__info-data workout__info-data--repetitions">x${this._data.repetitions}</span>
 
           <div class="workout__info-buttons">
-            <button class="btn--tiny btn--decrease-repetitions">
+            <button class="btn--tiny btn--decrease-repetitions" data-update-to = "${this._data.repetitions - 1}">
               <i class="fa-solid fa-minus"></i>
             </button>
-            <button class="btn--tiny btn--increase-repetitions">
+            <button class="btn--tiny btn--increase-repetitions" data-update-to = "${this._data.repetitions + 1}">
               <i class="fa-solid fa-plus"></i>
             </button>
         </div>
 
         <div class="workout__info">
         <span class="workout__info-text">Nbr of sets : </span>
-          <span class="workout__info-data workout__info-data--sets">x${this.#data.sets}</span>
+          <span class="workout__info-data workout__info-data--sets">x${this._data.sets}</span>
 
           <div class="workout__info-buttons">
-            <button class="btn--tiny btn--decrease-sets">
+            <button class="btn--tiny btn--decrease-sets" data-update-to = "${this._data.sets - 1}">
               <i class="fa-solid fa-minus"></i>
             </button>
-            <button class="btn--tiny btn--increase-sets">
+            <button class="btn--tiny btn--increase-sets" data-update-to = "${this._data.sets + 1}">
               <i class="fa-solid fa-plus"></i>
             </button>
         </div>
@@ -2672,6 +2779,176 @@ class WorkoutView {
 }
 exports.default = new WorkoutView();
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["aD7Zm","aenu9"], "aenu9", "parcelRequireade5")
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./View":"5cUXS"}],"5cUXS":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+class View {
+    _data;
+    render(data) {
+        if (!data || Array.isArray(data) && data.length === 0) return this.renderError();
+        this._data = data;
+        const markup = this._generateMarkup();
+        this._clear();
+        this._parentEl.insertAdjacentHTML("afterbegin", markup);
+    }
+    update(data) {
+        if (!data || Array.isArray(data) && data.length === 0) return this.renderError();
+        this._data = data;
+        const newMarkup = this._generateMarkup();
+        // Convert the string to a real DOM Node Object / Virtual DOM :
+        const newDOM = document.createRange().createContextualFragment(newMarkup);
+        const newElements = Array.from(newDOM.querySelectorAll("*"));
+        const curElements = Array.from(this._parentEl.querySelectorAll("*"));
+        newElements.forEach((newEl, i)=>{
+            const curEl = curElements[i];
+            // Update changed Text :
+            if (!newEl.isEqualNode(curEl) && newEl.firstChild?.nodeValue.trim() !== "") curEl.textContent = newEl.textContent;
+            // Update changed Attributes:
+            if (!newEl.isEqualNode(curEl)) Array.from(newEl.attributes).forEach((attr)=>curEl.setAttribute(attr.name, attr.value));
+        });
+    }
+    _clear() {
+        this._parentEl.innerHTML = "";
+    }
+    renderSpinner() {
+        const markup = `
+    <div class ="spinner">
+    <i class="fa-solid fa-spinner"></i>
+    </div>
+    `;
+        this._clear();
+        this._parentEl.insertAdjacentHTML("afterbegin", markup);
+    }
+    renderError(message = this._errorMessage) {
+        const markup = `
+        <div class="error">
+            <p>
+            <i class="nav_fa fa-solid fa-triangle-exclamation"></i>
+            ${message}</p>
+        </div> 
+    `;
+        this._clear();
+        this._parentEl.insertAdjacentHTML("afterbegin", markup);
+    }
+    renderMessage(message = this._message) {
+        const markup = `
+        <div class="message">
+            <p>
+            <i class="fa-solid fa-dumbbell"></i>
+            ${message}</p>
+        </div> 
+    `;
+        this._clear();
+        this._parentEl.insertAdjacentHTML("afterbegin", markup);
+    }
+}
+exports.default = View;
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"9OQAM":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+class SearchView {
+    _parentEl = document.querySelector(".search");
+    getQuery() {
+        const query = this._parentEl.querySelector(".search__field").value;
+        this._clearInput();
+        return query;
+    }
+    _clearInput() {
+        this._parentEl.querySelector(".search__field").value = "";
+    }
+    addHandlerSearch(handler) {
+        // Listening to search field :
+        this._parentEl.addEventListener("submit", function(e) {
+            e.preventDefault();
+            handler();
+        });
+    }
+}
+exports.default = new SearchView();
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"cSbZE":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _view = require("./View");
+var _viewDefault = parcelHelpers.interopDefault(_view);
+class ResultsView extends (0, _viewDefault.default) {
+    _parentEl = document.querySelector(".results");
+    _errorMessage = `No workouts found for your query! Please try again ;)`;
+    _message = ``;
+    _generateMarkup() {
+        return this._data.map(this._generateMarkupPreview).join("");
+    }
+    _generateMarkupPreview(result) {
+        const id = window.location.hash.slice(1);
+        return `
+        <li class="preview">
+            <a class="preview__link" href="#${result.id}">
+              <figure class="preview__fig">
+                <img src="${result.gif}" alt="${result.name}" />
+              </figure>
+              <div class="preview__data">
+                <h4 class="preview__title">${result.name}</h4>
+                <p class="preview__publisher">${result.publisher}</p>
+              </div>
+            </a>
+        </li>
+    `;
+    }
+}
+exports.default = new ResultsView();
+
+},{"./View":"5cUXS","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6z7bi":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _view = require("./View");
+var _viewDefault = parcelHelpers.interopDefault(_view);
+class PaginationView extends (0, _viewDefault.default) {
+    _parentEl = document.querySelector(".pagination");
+    addHandlerClick(handler) {
+        this._parentEl.addEventListener("click", function(e) {
+            const btn = e.target.closest(".btn--inline");
+            if (!btn) return;
+            const goToPage = +btn.dataset.goto;
+            handler(goToPage);
+        });
+    }
+    _generateMarkup() {
+        const curPage = this._data.page;
+        const numPages = Math.ceil(this._data.results.length / this._data.resultsPerPage);
+        console.log(numPages);
+        // Page 1, and there are other pages
+        if (curPage === 1 && numPages > 1) return `
+      <button data-goto="${curPage + 1}" class="btn--inline pagination__btn--next">
+                <span>Page ${curPage + 1} <i class="fa-solid fa-arrow-right"></i></span>
+                
+        </button>
+      `;
+        // Last page
+        if (curPage === numPages && numPages > 1) return `
+      <button data-goto="${curPage - 1}" class="btn--inline pagination__btn--prev">
+                <span> <i class="fa-solid fa-arrow-left"></i>
+                Page ${curPage - 1}</span>
+        </button>
+      `;
+        // Other page
+        if (curPage < numPages) return `
+      <button data-goto="${curPage - 1}" class="btn--inline pagination__btn--prev">
+      <span> <i class="fa-solid fa-arrow-left"></i>
+      Page ${curPage - 1}</span>
+        </button>
+
+      <button data-goto="${curPage + 1}" class="btn--inline pagination__btn--next">
+                <span>Page ${curPage + 1} <i class="fa-solid fa-arrow-right"></i></span>
+                
+        </button>
+      `;
+        // Page 1, and there are No other pages
+        return "";
+    }
+}
+exports.default = new PaginationView();
+
+},{"./View":"5cUXS","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["aD7Zm","aenu9"], "aenu9", "parcelRequireade5")
 
 //# sourceMappingURL=index.e37f48ea.js.map
