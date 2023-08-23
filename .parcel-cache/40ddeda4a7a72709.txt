@@ -45,7 +45,7 @@
 96C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\core-js\full\disposable-stack\index.js133343455235296907 0
 76C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\.package-lock.json133343457767372079 0
 98C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\core-js\modules\es.number.parse-float.js133343455195751204 0
-57C:\Users\ASUS\Desktop\Github\FitnessCoachApp\package.json133343457759307025 0
+57C:\Users\ASUS\Desktop\Github\FitnessCoachApp\package.json133370915968627335 0
 71C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\timsort\build133342848286326237 1
 111C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\@swc\helpers\_\_async_generator_delegate\package.json133342848410653604 0
 96C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\lmdb\dependencies\lz4\lib\liblz4.pc.in133342848372488346 0
@@ -76,10 +76,10 @@
 78C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\json5\lib\require.js133342848289764108 0
 128C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\@parcel\optimizer-svgo\node_modules\css-tree\lib\syntax\node\String.js133342848371329067 0
 90C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\@parcel\utils\src\escape-html.js133342848312351827 0
-49C:\Users\ASUS\Desktop\Github\FitnessCoachApp\dist133350182640120767 1
+49C:\Users\ASUS\Desktop\Github\FitnessCoachApp\dist133370979755664529 1
 99C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\core-js\stable\number\max-safe-integer.js133343455246569989 0
 105C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\csso\node_modules\css-tree\cjs\parser\index.cjs133342848347030477 0
-55C:\Users\ASUS\Desktop\Github\FitnessCoachApp\index.html133349267007512185 0
+55C:\Users\ASUS\Desktop\Github\FitnessCoachApp\index.html133370916999809135 0
 89C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\core-js\es\typed-array\every.js133343455208573327 0
 94C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\cosmiconfig\dist\getDirectory.js.map133342848313241295 0
 130C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\@parcel\optimizer-svgo\node_modules\css-tree\lib\syntax\node\Operator.js133342848362530495 0
@@ -170,7 +170,7 @@
 76C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\commander\index.js133342848274867505 0
 98C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\core-js\internals\array-last-index-of.js133343455175333743 0
 94C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\core-js\es\array\virtual\includes.js133343455231799057 0
-62C:\Users\ASUS\Desktop\Github\FitnessCoachApp\src\css\style.css133349295938318304 0
+62C:\Users\ASUS\Desktop\Github\FitnessCoachApp\src\css\style.css133370930374939432 0
 94C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\core-js\full\instance\copy-within.js133343455183328834 0
 107C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\caniuse-lite\data\features\css-conic-gradients.js133342848380273543 0
 104C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\@swc\helpers\cjs\_class_private_field_init.cjs133342848314550479 0
@@ -402,7 +402,7 @@
 66C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\get-port133342848279240590 1
 101C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\core-js\actual\object\prevent-extensions.js133343455254884886 0
 105C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\caniuse-lite\data\features\fieldset-disabled.js133342848415210799 0
-67C:\Users\ASUS\Desktop\Github\FitnessCoachApp\dist\logo.726d37a8.png133350182639960878 0
+67C:\Users\ASUS\Desktop\Github\FitnessCoachApp\dist\logo.726d37a8.png133370979755184816 0
 90C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\core-js\modules\es.array.sort.js133343455194312092 0
 90C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\core-js\features\array\concat.js133343455181410016 0
 103C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\caniuse-lite\data\features\css-unset-value.js133342848402638533 0
@@ -1362,7 +1362,7 @@
 75C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\svgo\package.json133342848351937017 0
 90C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\svgo\plugins\removeEmptyAttrs.js133342848339894873 0
 70C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\svgo\plugins133342848352816470 1
-71C:\Users\ASUS\Desktop\Github\FitnessCoachApp\dist\index.e37f48ea.js.map133350182640080796 0
+71C:\Users\ASUS\Desktop\Github\FitnessCoachApp\dist\index.e37f48ea.js.map133370979755574574 0
 96C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\svgo\plugins\addClassesToSVGElement.js133342848289044555 0
 103C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\core-js\internals\require-object-coercible.js133343455265093761 0
 76C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\msgpackr\pack.d.ts133342848348209753 0
@@ -2747,7 +2747,7 @@
 107C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\@parcel\runtime-js\lib\helpers\node\css-loader.js133342848293251977 0
 85C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\lightningcss\node\index.mjs133342848295570537 0
 99C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\entities\lib\generated\decode-data-xml.js133342848283777795 0
-60C:\Users\ASUS\Desktop\Github\FitnessCoachApp\dist\index.html133350182639840957 0
+60C:\Users\ASUS\Desktop\Github\FitnessCoachApp\dist\index.html133370979754914986 0
 118C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\lightningcss-win32-x64-msvc\lightningcss.win32-x64-msvc.node133342848370539561 0
 76C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\css-tree\cjs\utils133342848377315382 1
 106C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\caniuse-lite\data\features\css-letter-spacing.js133342848393599918 0
@@ -6425,7 +6425,7 @@
 91C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\core-js\features\disposable-stack133343455234487425 1
 88C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\core-js\features\dom-exception133343455277999617 1
 84C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\core-js\features\escape.js133343455200778111 0
-72C:\Users\ASUS\Desktop\Github\FitnessCoachApp\dist\index.c92073ef.css.map133350182640060808 0
+72C:\Users\ASUS\Desktop\Github\FitnessCoachApp\dist\index.c92073ef.css.map133370979755564596 0
 90C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\core-js\features\get-iterator.js133343455226992008 0
 83C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\core-js\features\index.js133343455234617325 0
 105C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\@swc\helpers\src\_object_without_properties.mjs133342848433280936 0
@@ -6574,7 +6574,7 @@
 88C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\@parcel\runtime-js\lib\helpers133342848314250672 1
 98C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\core-js\features\string\virtual\blink.js133343455178821605 0
 97C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\core-js\features\string\virtual\bold.js133343455179101421 0
-68C:\Users\ASUS\Desktop\Github\FitnessCoachApp\dist\index.c92073ef.css133350182639920896 0
+68C:\Users\ASUS\Desktop\Github\FitnessCoachApp\dist\index.c92073ef.css133370979754905034 0
 100C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\@swc\helpers\_\_initializer_warning_helper133342848418338874 1
 104C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\core-js\features\string\virtual\code-points.js133343455180670481 0
 89C:\Users\ASUS\Desktop\Github\FitnessCoachApp\node_modules\caniuse-lite\data\regions\BI.js133342848348619507 0
@@ -9499,4 +9499,4 @@
 81C:\Users\ASUS\Desktop\Github\FitnessCoachApp\dist\FitnessCoachApp.3464ddca.js.map133343456184052226 0
 68C:\Users\ASUS\Desktop\Github\FitnessCoachApp\dist\index.3a01df49.css133343180939201533 0
 71C:\Users\ASUS\Desktop\Github\FitnessCoachApp\dist\index.672d4772.js.map133342848716716941 0
-67C:\Users\ASUS\Desktop\Github\FitnessCoachApp\dist\index.e37f48ea.js133350182639930891 0
+67C:\Users\ASUS\Desktop\Github\FitnessCoachApp\dist\index.e37f48ea.js133370979755324748 0

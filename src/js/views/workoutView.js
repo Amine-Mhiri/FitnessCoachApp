@@ -14,17 +14,22 @@ class WorkoutView extends View {
     this._parentEl.addEventListener('click', function (e) {
       const btn = e.target.closest('.btn--tiny');
       if (!btn) return;
-      console.log(btn);
       const updateTo = +btn.dataset.updateTo;
-      // const workoutOption = 'sets';
+
       const workoutOption =
         btn.classList.contains('btn--decrease-repetitions') ||
         btn.classList.contains('btn--increase-repetitions')
           ? 'repetitions'
           : 'sets';
-      console.log(workoutOption);
-      console.log(updateTo);
       if (updateTo > 0) handler(workoutOption, updateTo);
+    });
+  }
+
+  addHandlerAddBookmark(handler) {
+    this._parentEl.addEventListener('click', function (e) {
+      const btn = e.target.closest('.btn--bookmark');
+      if (!btn) return;
+      handler();
     });
   }
 
@@ -39,7 +44,17 @@ class WorkoutView extends View {
     </h3>
     </figure>
 
+    
+
     <div class="workout__details">
+        <div class="workout__info">
+          <i class="fa-solid fa-clock"></i>
+          <span class="workout__info-text">Timer : </span>
+            <span class="workout__info-data workout__info-data--timer"> ${Math.ceil(
+              this._data.timer
+            )} min</span> 
+        </div>
+
         <div class="workout__info">
         <span class="workout__info-text">Body Part : </span>
           <span class="workout__info-data workout__info-data--bodyPart">${
@@ -99,6 +114,14 @@ class WorkoutView extends View {
             </button>
         </div>
 
+        <button class="btn search__btn btn--bookmark">
+           <i class="fa-${
+             this._data.bookmarked ? 'solid' : 'regular'
+           } fa-bookmark"></i>
+          <span> ${
+            this._data.bookmarked ? 'Remove from' : 'Add to'
+          } current session</span>
+        </button>
 
       </div>
     </div>

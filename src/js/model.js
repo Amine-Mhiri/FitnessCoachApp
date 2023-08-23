@@ -10,6 +10,7 @@ export const state = {
     page: 1,
     resultsPerPage: RES_PER_PAGE,
   },
+  bookmarks: [],
 };
 
 export const loadWorkout = async function (id) {
@@ -26,13 +27,15 @@ export const loadWorkout = async function (id) {
       target: workout.target,
       repetitions: 10,
       sets: 3,
+      timer: 2,
       publisher: 'FitnessCoachApp',
     };
     window.location.hash = `#${workout.id}`;
-    console.log(state.workout);
-    console.log(state.search.results);
+
+    if (state.bookmarks.some(bookmark => bookmark.id === id))
+      state.workout.bookmarked = true;
+    else state.workout.bookmarked = false;
   } catch (err) {
-    console.log(`${err} 🧧`);
     throw err;
   }
 };
@@ -60,9 +63,11 @@ export const loadSearchResults = async function (query) {
           target: workout.target,
           repetitions: 10,
           sets: 3,
+          timer: 2,
           publisher: 'FitnessCoachApp',
         };
       });
+    state.search.page = 1;
   } catch (err) {
     console.log(`${err} 🧧`);
     throw err;
@@ -77,7 +82,44 @@ export const getSearchResultsPage = function (page = state.search.page) {
 };
 
 export const updateWorkoutOptions = function (option, newValue) {
-  option === 'sets'
-    ? (state.workout.sets = newValue)
-    : (state.workout.repetitions = newValue);
+  if (option === 'sets') {
+    state.workout.timer =
+      (+state.workout.timer * newValue) / state.workout.sets;
+    state.workout.sets = newValue;
+  }
+  if (option === 'repetitions') {
+    state.workout.timer =
+      (+state.workout.timer * newValue) / state.workout.repetitions;
+    state.workout.repetitions = newValue;
+  }
 };
+
+const persistBookmarks = function () {
+  localStorage.setItem('bookmarks', JSON.stringify(state.bookmarks));
+};
+
+export const addBookmark = function (workout) {
+  // Add bookmark
+  state.bookmarks.push(workout);
+
+  // Mark current workout as bookmarked
+  if (workout.id === state.workout.id) state.workout.bookmarked = true;
+  persistBookmarks();
+};
+
+export const deleteBookmark = function (id) {
+  // Delete bookmark
+  const index = state.bookmarks.findIndex(el => el.id === id);
+  state.bookmarks.splice(index, 1);
+
+  // Mark current workout as NOT bookmarked
+  if (id === state.workout.id) state.workout.bookmarked = false;
+  persistBookmarks();
+};
+
+const init = function () {
+  const storage = localStorage.getItem('bookmarks');
+  if (storage) state.bookmarks = JSON.parse(storage);
+};
+
+init();

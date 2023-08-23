@@ -16,6 +16,7 @@ body {
   background-color: #fff;
   border-radius: 2rem;
   grid-template-rows: 5rem minmax(30rem, auto);
+  min-height: 80vh;
   display: grid;
 }
 
@@ -66,6 +67,12 @@ i {
   padding: 1rem 2rem;
   font-family: inherit;
   font-weight: 600;
+}
+
+.btn--bookmark {
+  margin-top: 2.5rem;
+  padding: 1rem;
+  font-weight: 500;
 }
 
 .search__btn i {
@@ -160,7 +167,7 @@ i {
 
 .workout__info {
   text-align: center;
-  line-height: 1.5rem;
+  line-height: 1.8rem;
 }
 
 .workout__info-buttons i {
@@ -177,13 +184,12 @@ i {
 
 .spinner {
   text-align: center;
-  margin: 2.5rem auto;
+  margin: 5rem auto;
 }
 
-.spinner .fa-spinner {
+.spinner i {
   fill: #db6e09;
-  width: 4rem;
-  height: 4rem;
+  font-size: 2.5rem;
   animation: 2s linear infinite rotate;
 }
 
@@ -200,7 +206,7 @@ i {
 .message, .error {
   justify-content: center;
   align-items: center;
-  padding: 5rem;
+  padding: 2rem;
   display: flex;
 }
 
@@ -212,8 +218,8 @@ i {
 
 .error p {
   font-size: 1.1rem;
-  font-weight: 600;
-  line-height: 1;
+  font-weight: 500;
+  line-height: 1.4;
 }
 
 .preview__link {
@@ -230,8 +236,8 @@ i {
   transform: translateY(-2px);
 }
 
-.preview--active {
-  background-color: #797575;
+.preview__link--active {
+  background-color: #f2f2f2;
 }
 
 .preview__fig {
@@ -328,7 +334,7 @@ i {
 
 .copyright {
   color: #797575;
-  margin-top: 3rem;
+  margin-top: 8rem;
   margin-bottom: 2rem;
   padding: 0 2.5rem;
   font-size: .9rem;
@@ -362,6 +368,17 @@ i {
 
 .btn--inline span {
   margin: 0 .4rem;
+}
+
+.btn--tiny {
+  border-style: none;
+  border-radius: 50%;
+  width: 1.8rem;
+  height: 1.8rem;
+}
+
+.btn--tiny i {
+  margin-left: 3px;
 }
 
 /*# sourceMappingURL=index.c92073ef.css.map */

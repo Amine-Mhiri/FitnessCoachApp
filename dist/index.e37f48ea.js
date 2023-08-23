@@ -585,6 +585,8 @@ var _resultsViewJs = require("./views/resultsView.js");
 var _resultsViewJsDefault = parcelHelpers.interopDefault(_resultsViewJs);
 var _paginationViewJs = require("./views/paginationView.js");
 var _paginationViewJsDefault = parcelHelpers.interopDefault(_paginationViewJs);
+var _bookmarksViewJs = require("./views/bookmarksView.js");
+var _bookmarksViewJsDefault = parcelHelpers.interopDefault(_bookmarksViewJs);
 //  regenerator is for polyfilling async await for older browsers
 var _runtime = require("regenerator-runtime/runtime");
 var _regeneratorRuntime = require("regenerator-runtime");
@@ -595,7 +597,8 @@ const controlWorkout = async function() {
         if (!id) return;
         (0, _workoutViewJsDefault.default).renderSpinner();
         // 1. Update results view to mark selected search result
-        // resultsView.render(model.getSearchResultsPage());
+        (0, _resultsViewJsDefault.default).update(_modelJs.getSearchResultsPage());
+        (0, _bookmarksViewJsDefault.default).update(_modelJs.state.bookmarks);
         // 2. loading workout :
         await _modelJs.loadWorkout(id);
         // 3. Rendering workout :
@@ -603,6 +606,9 @@ const controlWorkout = async function() {
     } catch (err) {
         (0, _workoutViewJsDefault.default).renderError();
     }
+};
+const controlBookmarks = function() {
+    (0, _bookmarksViewJsDefault.default).render(_modelJs.state.bookmarks);
 };
 const controlSearchResults = async function() {
     try {
@@ -630,18 +636,28 @@ const controlWorkoutOptions = function(option, newValue) {
     // Update the Repetitions and sets (in state) :
     _modelJs.updateWorkoutOptions(option, newValue);
     // Update the workout view :
-    // workoutView.render(model.state.workout);
     (0, _workoutViewJsDefault.default).update(_modelJs.state.workout);
 };
+const controlAddBookmark = function() {
+    // 1 ) Adding and removeing bookmarks
+    if (!_modelJs.state.workout.bookmarked) _modelJs.addBookmark(_modelJs.state.workout);
+    else _modelJs.deleteBookmark(_modelJs.state.workout.id);
+    // 2) Updating recipe view
+    (0, _workoutViewJsDefault.default).update(_modelJs.state.workout);
+    // 3) Render bookmarks
+    (0, _bookmarksViewJsDefault.default).render(_modelJs.state.bookmarks);
+};
 const init = function() {
+    (0, _bookmarksViewJsDefault.default).addHandlerRender(controlBookmarks);
     (0, _workoutViewJsDefault.default).addHandlerRender(controlWorkout);
     (0, _workoutViewJsDefault.default).addHandlerUpdateOptions(controlWorkoutOptions);
+    (0, _workoutViewJsDefault.default).addHandlerAddBookmark(controlAddBookmark);
     (0, _searchViewJsDefault.default).addHandlerSearch(controlSearchResults);
     (0, _paginationViewJsDefault.default).addHandlerClick(controlPagination);
 };
 init();
 
-},{"core-js/modules/web.immediate.js":"49tUX","regenerator-runtime/runtime":"dXNgZ","./model.js":"Y4A21","./views/workoutView.js":"6ADSb","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./views/searchView.js":"9OQAM","./views/resultsView.js":"cSbZE","regenerator-runtime":"dXNgZ","./views/paginationView.js":"6z7bi"}],"49tUX":[function(require,module,exports) {
+},{"core-js/modules/web.immediate.js":"49tUX","regenerator-runtime/runtime":"dXNgZ","./model.js":"Y4A21","./views/workoutView.js":"6ADSb","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./views/searchView.js":"9OQAM","./views/resultsView.js":"cSbZE","regenerator-runtime":"dXNgZ","./views/paginationView.js":"6z7bi","./views/bookmarksView.js":"4Lqzq"}],"49tUX":[function(require,module,exports) {
 // TODO: Remove this module from `core-js@4` since it's split to modules listed below
 require("52e9b3eefbbce1ed");
 require("292fa64716f5b39e");
@@ -2548,6 +2564,8 @@ parcelHelpers.export(exports, "loadWorkout", ()=>loadWorkout);
 parcelHelpers.export(exports, "loadSearchResults", ()=>loadSearchResults);
 parcelHelpers.export(exports, "getSearchResultsPage", ()=>getSearchResultsPage);
 parcelHelpers.export(exports, "updateWorkoutOptions", ()=>updateWorkoutOptions);
+parcelHelpers.export(exports, "addBookmark", ()=>addBookmark);
+parcelHelpers.export(exports, "deleteBookmark", ()=>deleteBookmark);
 var _config = require("./config");
 var _helpers = require("./helpers");
 const state = {
@@ -2557,7 +2575,8 @@ const state = {
         results: [],
         page: 1,
         resultsPerPage: (0, _config.RES_PER_PAGE)
-    }
+    },
+    bookmarks: []
 };
 const loadWorkout = async function(id) {
     try {
@@ -2572,13 +2591,13 @@ const loadWorkout = async function(id) {
             target: workout.target,
             repetitions: 10,
             sets: 3,
+            timer: 2,
             publisher: "FitnessCoachApp"
         };
         window.location.hash = `#${workout.id}`;
-        console.log(state.workout);
-        console.log(state.search.results);
+        if (state.bookmarks.some((bookmark)=>bookmark.id === id)) state.workout.bookmarked = true;
+        else state.workout.bookmarked = false;
     } catch (err) {
-        console.log(`${err} 🧧`);
         throw err;
     }
 };
@@ -2597,9 +2616,11 @@ const loadSearchResults = async function(query) {
                 target: workout.target,
                 repetitions: 10,
                 sets: 3,
+                timer: 2,
                 publisher: "FitnessCoachApp"
             };
         });
+        state.search.page = 1;
     } catch (err) {
         console.log(`${err} 🧧`);
         throw err;
@@ -2612,8 +2633,38 @@ const getSearchResultsPage = function(page = state.search.page) {
     return state.search.results.slice(start, end);
 };
 const updateWorkoutOptions = function(option, newValue) {
-    option === "sets" ? state.workout.sets = newValue : state.workout.repetitions = newValue;
+    if (option === "sets") {
+        state.workout.timer = +state.workout.timer * newValue / state.workout.sets;
+        state.workout.sets = newValue;
+    }
+    if (option === "repetitions") {
+        state.workout.timer = +state.workout.timer * newValue / state.workout.repetitions;
+        state.workout.repetitions = newValue;
+    }
 };
+const persistBookmarks = function() {
+    localStorage.setItem("bookmarks", JSON.stringify(state.bookmarks));
+};
+const addBookmark = function(workout) {
+    // Add bookmark
+    state.bookmarks.push(workout);
+    // Mark current workout as bookmarked
+    if (workout.id === state.workout.id) state.workout.bookmarked = true;
+    persistBookmarks();
+};
+const deleteBookmark = function(id) {
+    // Delete bookmark
+    const index = state.bookmarks.findIndex((el)=>el.id === id);
+    state.bookmarks.splice(index, 1);
+    // Mark current workout as NOT bookmarked
+    if (id === state.workout.id) state.workout.bookmarked = false;
+    persistBookmarks();
+};
+const init = function() {
+    const storage = localStorage.getItem("bookmarks");
+    if (storage) state.bookmarks = JSON.parse(storage);
+};
+init();
 
 },{"./config":"k5Hzs","./helpers":"hGI1E","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"k5Hzs":[function(require,module,exports) {
 // Contains all the constant variables that we might change in the future for the app
@@ -2711,13 +2762,16 @@ class WorkoutView extends (0, _viewDefault.default) {
         this._parentEl.addEventListener("click", function(e) {
             const btn = e.target.closest(".btn--tiny");
             if (!btn) return;
-            console.log(btn);
             const updateTo = +btn.dataset.updateTo;
-            // const workoutOption = 'sets';
             const workoutOption = btn.classList.contains("btn--decrease-repetitions") || btn.classList.contains("btn--increase-repetitions") ? "repetitions" : "sets";
-            console.log(workoutOption);
-            console.log(updateTo);
             if (updateTo > 0) handler(workoutOption, updateTo);
+        });
+    }
+    addHandlerAddBookmark(handler) {
+        this._parentEl.addEventListener("click", function(e) {
+            const btn = e.target.closest(".btn--bookmark");
+            if (!btn) return;
+            handler();
         });
     }
     _generateMarkup() {
@@ -2729,7 +2783,15 @@ class WorkoutView extends (0, _viewDefault.default) {
     </h3>
     </figure>
 
+    
+
     <div class="workout__details">
+        <div class="workout__info">
+          <i class="fa-solid fa-clock"></i>
+          <span class="workout__info-text">Timer : </span>
+            <span class="workout__info-data workout__info-data--timer"> ${Math.ceil(this._data.timer)} min</span> 
+        </div>
+
         <div class="workout__info">
         <span class="workout__info-text">Body Part : </span>
           <span class="workout__info-data workout__info-data--bodyPart">${this._data.bodyPart}</span>
@@ -2771,6 +2833,10 @@ class WorkoutView extends (0, _viewDefault.default) {
             </button>
         </div>
 
+        <button class="btn search__btn btn--bookmark">
+           <i class="fa-${this._data.bookmarked ? "solid" : "regular"} fa-bookmark"></i>
+          <span> ${this._data.bookmarked ? "Remove from" : "Add to"} current session</span>
+        </button>
 
       </div>
     </div>
@@ -2784,25 +2850,33 @@ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 class View {
     _data;
-    render(data) {
+    /**
+   * Render the received object to the DOM
+   * @param {Object | Object[]} data The data to be rendered (e.g. workout)
+   * @returns {undefined}
+   * @this {object} View instance
+   * @author Amine Mhiri
+   */ render(data) {
         if (!data || Array.isArray(data) && data.length === 0) return this.renderError();
         this._data = data;
         const markup = this._generateMarkup();
         this._clear();
         this._parentEl.insertAdjacentHTML("afterbegin", markup);
     }
+    // A DOM Updating algorithm to change only relevant text and attributes
     update(data) {
-        if (!data || Array.isArray(data) && data.length === 0) return this.renderError();
         this._data = data;
         const newMarkup = this._generateMarkup();
         // Convert the string to a real DOM Node Object / Virtual DOM :
         const newDOM = document.createRange().createContextualFragment(newMarkup);
+        // We use Array.from to convert the node list to a real array
         const newElements = Array.from(newDOM.querySelectorAll("*"));
         const curElements = Array.from(this._parentEl.querySelectorAll("*"));
         newElements.forEach((newEl, i)=>{
             const curEl = curElements[i];
             // Update changed Text :
-            if (!newEl.isEqualNode(curEl) && newEl.firstChild?.nodeValue.trim() !== "") curEl.textContent = newEl.textContent;
+            if (!newEl.isEqualNode(curEl) && // nodeValue method returns null if the node is an element and returns text content if it's text
+            newEl.firstChild?.nodeValue.trim() !== "") curEl.textContent = newEl.textContent;
             // Update changed Attributes:
             if (!newEl.isEqualNode(curEl)) Array.from(newEl.attributes).forEach((attr)=>curEl.setAttribute(attr.name, attr.value));
         });
@@ -2813,7 +2887,7 @@ class View {
     renderSpinner() {
         const markup = `
     <div class ="spinner">
-    <i class="fa-solid fa-spinner"></i>
+    <i class="fa-solid fa-spinner"></i>  
     </div>
     `;
         this._clear();
@@ -2883,7 +2957,7 @@ class ResultsView extends (0, _viewDefault.default) {
         const id = window.location.hash.slice(1);
         return `
         <li class="preview">
-            <a class="preview__link" href="#${result.id}">
+            <a class="preview__link ${result.id === id ? "preview__link--active" : ""}" href="#${result.id}">
               <figure class="preview__fig">
                 <img src="${result.gif}" alt="${result.name}" />
               </figure>
@@ -2916,7 +2990,6 @@ class PaginationView extends (0, _viewDefault.default) {
     _generateMarkup() {
         const curPage = this._data.page;
         const numPages = Math.ceil(this._data.results.length / this._data.resultsPerPage);
-        console.log(numPages);
         // Page 1, and there are other pages
         if (curPage === 1 && numPages > 1) return `
       <button data-goto="${curPage + 1}" class="btn--inline pagination__btn--next">
@@ -2948,6 +3021,40 @@ class PaginationView extends (0, _viewDefault.default) {
     }
 }
 exports.default = new PaginationView();
+
+},{"./View":"5cUXS","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"4Lqzq":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _view = require("./View");
+var _viewDefault = parcelHelpers.interopDefault(_view);
+class BookmarksView extends (0, _viewDefault.default) {
+    _parentEl = document.querySelector(".bookmarks__list");
+    _errorMessage = `No workouts for this session yet. Start searching and adding workouts to build your training session ;)`;
+    _message = ``;
+    addHandlerRender(handler) {
+        window.addEventListener("load", handler);
+    }
+    _generateMarkup() {
+        return this._data.map(this._generateMarkupPreview).join("");
+    }
+    _generateMarkupPreview(result) {
+        const id = window.location.hash.slice(1);
+        return `
+        <li class="preview">
+            <a class="preview__link ${result.id === id ? "preview__link--active" : ""}" href="#${result.id}">
+              <figure class="preview__fig">
+                <img src="${result.gif}" alt="${result.name}" />
+              </figure>
+              <div class="preview__data">
+                <h4 class="preview__title">${result.name}</h4>
+                <p class="preview__publisher">${result.publisher}</p>
+              </div>
+            </a>
+        </li>
+    `;
+    }
+}
+exports.default = new BookmarksView();
 
 },{"./View":"5cUXS","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["aD7Zm","aenu9"], "aenu9", "parcelRequireade5")
 

@@ -3,6 +3,7 @@ import workoutView from './views/workoutView.js';
 import searchView from './views/searchView.js';
 import resultsView from './views/resultsView.js';
 import paginationView from './views/paginationView.js';
+import bookmarksView from './views/bookmarksView.js';
 
 // core js is for polyfilling everything else
 import 'core-js/stable';
@@ -21,7 +22,8 @@ const controlWorkout = async function () {
 
     workoutView.renderSpinner();
     // 1. Update results view to mark selected search result
-    // resultsView.render(model.getSearchResultsPage());
+    resultsView.update(model.getSearchResultsPage());
+    bookmarksView.update(model.state.bookmarks);
     // 2. loading workout :
     await model.loadWorkout(id);
 
@@ -32,6 +34,9 @@ const controlWorkout = async function () {
   }
 };
 
+const controlBookmarks = function () {
+  bookmarksView.render(model.state.bookmarks);
+};
 const controlSearchResults = async function () {
   try {
     resultsView.renderSpinner();
@@ -64,13 +69,25 @@ const controlWorkoutOptions = function (option, newValue) {
   // Update the Repetitions and sets (in state) :
   model.updateWorkoutOptions(option, newValue);
   // Update the workout view :
-  // workoutView.render(model.state.workout);
   workoutView.update(model.state.workout);
 };
 
+const controlAddBookmark = function () {
+  // 1 ) Adding and removeing bookmarks
+  if (!model.state.workout.bookmarked) model.addBookmark(model.state.workout);
+  else model.deleteBookmark(model.state.workout.id);
+
+  // 2) Updating recipe view
+  workoutView.update(model.state.workout);
+
+  // 3) Render bookmarks
+  bookmarksView.render(model.state.bookmarks);
+};
 const init = function () {
+  bookmarksView.addHandlerRender(controlBookmarks);
   workoutView.addHandlerRender(controlWorkout);
   workoutView.addHandlerUpdateOptions(controlWorkoutOptions);
+  workoutView.addHandlerAddBookmark(controlAddBookmark);
   searchView.addHandlerSearch(controlSearchResults);
   paginationView.addHandlerClick(controlPagination);
 };

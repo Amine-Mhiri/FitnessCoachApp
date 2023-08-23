@@ -1,7 +1,7 @@
 {
   "name": "fitnesscoachapp",
   "version": "1.0.0",
-  "description": "Train your clients online",
+  "description": "Train your clients the easy way",
   "main": "script.js",
   "scripts": {
     "start": "parcel index.html",

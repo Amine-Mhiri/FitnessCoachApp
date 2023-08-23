@@ -1,5 +1,6 @@
 // Functions that we're going to use over and over
 import { TIMEOUT_SEC } from './config';
+
 const timeout = function (s) {
   return new Promise(function (_, reject) {
     setTimeout(function () {

@@ -17,6 +17,7 @@ body {
   border-radius: 2rem;
   display: grid;
   grid-template-rows: 5rem minmax(30rem, auto);
+  min-height: 80vh;
 }
 
 .header {
@@ -65,6 +66,17 @@ i {
   text-transform: uppercase;
   color: #fff;
   cursor: pointer;
+}
+
+.search__btn i {
+  color: #fff;
+  font-size: inherit;
+}
+
+.btn--bookmark {
+  font-weight: 500;
+  padding: 1rem 1rem;
+  margin-top: 2.5rem;
 }
 
 .search__btn i {
@@ -161,7 +173,7 @@ i {
 }
 
 .workout__info {
-  line-height: 1.5rem;
+  line-height: 1.8rem;
   text-align: center;
 }
 
@@ -177,14 +189,13 @@ i {
 }
 
 .spinner {
-  margin: 2.5rem auto;
+  margin: 5rem auto;
   text-align: center;
 }
 
 /*  Animation for the spinner - Loading */
-.spinner .fa-spinner {
-  height: 4rem;
-  width: 4rem;
+.spinner i {
+  font-size: 2.5rem;
   fill: #db6e09;
   animation: rotate 2s infinite linear;
 }
@@ -204,7 +215,7 @@ i {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 5rem;
+  padding: 2rem;
 }
 
 .error i {
@@ -215,8 +226,8 @@ i {
 
 .error p {
   font-size: 1.1rem;
-  line-height: 1;
-  font-weight: 600;
+  line-height: 1.4;
+  font-weight: 500;
 }
 
 .preview__link {
@@ -232,8 +243,8 @@ i {
   transform: translateY(-2px);
 }
 
-.preview--active {
-  background-color: #797575;
+.preview__link--active {
+  background-color: #f2f2f2;
 }
 
 .preview__fig {
@@ -313,11 +324,6 @@ i {
   margin-left: auto;
   margin-right: 1.25rem;
 }
-/* .preview i {
-  height: 0.2rem;
-  width: 0.2rem;
-  fill: #db6e09;
-} */
 
 /* Copyright & Pagination */
 
@@ -344,7 +350,7 @@ i {
   color: #797575;
   font-size: 0.9rem;
   padding: 0 2.5rem;
-  margin-top: 3rem;
+  margin-top: 8rem;
   margin-bottom: 2rem;
 }
 
@@ -379,4 +385,15 @@ i {
 
 .btn--inline span {
   margin: 0 0.4rem;
+}
+
+.btn--tiny {
+  border-radius: 50%;
+  height: 1.8rem;
+  width: 1.8rem;
+  border-style: none;
+}
+
+.btn--tiny i {
+  margin-left: 3px;
 }
