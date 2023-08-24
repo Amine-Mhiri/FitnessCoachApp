@@ -46,14 +46,16 @@ npm install
 4. Start the development server
    npm start
 
-How To Use 🔧
-Search for exercises and workouts using keywords like name, muscle group, or body part.
-Explore the search results to find the exercises you're interested in.
-Click on an exercise to view more details and add it to your workout session.
-Build your workout session by adding multiple exercises.
-Review and modify your workout session as needed.
-Bookmark exercises for quick access in the future.
+## How To Use 🔧
 
-Acknowledgments 🎁
+- Search for exercises and workouts using keywords like name, muscle group, or body part.
+- Explore the search results to find the exercises you're interested in.
+- Click on an exercise to view more details and add it to your workout session.
+- Build your workout session by adding multiple exercises.
+- Review and modify your workout session as needed. (Nbr of sets, repetitions & Timer )
+- Bookmark exercises for quick access in the future.
+
+## Acknowledgments 🎁
+
 Feel free to personalize this app according to your preferences. You can add animations, customize the UI and make it Responsive, and extend its features. 
 If you have any questions or need explanations about the code, don't hesitate to reach out.
